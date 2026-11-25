@@ -3,216 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Petfy - Perfil de Perro</title>
+    <title>Perfil Público - Petfy</title>
     <style>
+        /* Importar fuente moderna */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap');
+
+        :root {
+            --teal: #064f56;
+            --orange: #e0633f;
+            --bg-color: #f3f4f6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
             font-family: 'Nunito', sans-serif;
         }
+
         body {
-            background: linear-gradient(135deg, #fdf8f3 0%, #fff4ec 100%);
+            background-color: var(--bg-color);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 1rem;
+            padding: 20px;
         }
+
         .card {
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-            max-width: 400px;
+            background-color: #ffffff;
             width: 100%;
+            max-width: 420px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            border: 1px solid #f0e6dd;
             position: relative;
         }
+
+        /* Cabecera con la foto */
         .card-header {
-            background: linear-gradient(135deg, #e0633f 0%, #c2410c 100%);
-            height: 160px;
             position: relative;
+            width: 100%;
+            height: 320px;
+            background-color: var(--teal);
         }
+
         .card-header img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            mix-blend-mode: luminosity;
-            opacity: 0.4;
+            object-position: center;
         }
-        .dog-avatar {
+
+        .badge {
             position: absolute;
-            bottom: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid #ffffff;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-            background: #fdf8f3;
-            z-index: 2;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            color: var(--teal);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(4px);
         }
-        .dog-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            mix-blend-mode: normal;
-            opacity: 1;
+
+        .badge::before {
+            content: "✓";
+            color: #15803d;
         }
-        .card-body {
-            padding: 3.5rem 1.5rem 1.5rem;
+
+        /* Contenido */
+        .card-content {
+            padding: 24px;
+            margin-top: -20px;
+            position: relative;
+            background: #fff;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .pet-name {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--teal);
+            margin-bottom: 4px;
             text-align: center;
         }
-        .dog-name {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8rem;
-            color: #064f56;
-            margin-bottom: 0.25rem;
-        }
-        .dog-breed {
+
+        .pet-info {
+            text-align: center;
+            color: var(--text-light);
             font-size: 0.9rem;
-            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        /* Caja de mensaje urgente */
+        .alert-box {
+            background-color: #fff7ed;
+            border: 2px dashed var(--orange);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+            animation: pulse-border 2s infinite;
+        }
+
+        .alert-box p {
+            color: #9a3412;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .alert-box span {
+            display: block;
+            font-size: 0.85rem;
+            color: #c2410c;
             font-weight: 600;
-            margin-bottom: 1rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+            margin-top: 4px;
         }
-        .dog-info {
+
+        @keyframes pulse-border {
+            0% { border-color: var(--orange); }
+            50% { border-color: #fed7aa; }
+            100% { border-color: var(--orange); }
+        }
+
+        /* Botón de contacto */
+        .contact-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .btn-call {
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            gap: 10px;
+            width: 100%;
+            background: linear-gradient(135deg, var(--teal) 0%, #0a6b74 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 20px rgba(6, 79, 86, 0.25);
         }
-        .info-item {
+
+        .btn-call:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 79, 86, 0.35);
+        }
+
+        .btn-call:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            font-weight: 600;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: #fdf8f3;
-            padding: 0.6rem 1.2rem;
-            border-radius: 12px;
-            border: 1px solid #f0e6dd;
-            min-width: 80px;
+            gap: 4px;
         }
-        .info-item .icon {
-            font-size: 1.2rem;
-            margin-bottom: 0.2rem;
-        }
-        .info-item .value {
-            font-weight: 700;
-            color: #064f56;
-            font-size: 0.95rem;
-        }
-        .info-item .label {
-            font-size: 0.65rem;
-            color: #9ca3af;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-        .owner-section {
-            background: #fff7ed;
-            border-radius: 16px;
-            padding: 1rem;
-            border: 1px solid #fed7aa;
-            margin-bottom: 1rem;
-        }
-        .owner-title {
-            font-size: 0.75rem;
-            color: #c2410c;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-        .owner-name {
-            font-weight: 700;
-            color: #064f56;
-            font-size: 1.1rem;
-        }
-        .contact-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            width: 100%;
-            padding: 0.9rem;
-            background: linear-gradient(135deg, #064f56 0%, #0a6b74 100%);
-            color: #ffffff;
-            border: none;
-            border-radius: 14px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 14px rgba(6, 79, 86, 0.25);
-        }
-        .contact-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(6, 79, 86, 0.35);
-        }
-        .contact-btn .icon {
-            font-size: 1.2rem;
-        }
-        .card-footer {
-            padding: 0 1.5rem 1.5rem;
-            text-align: center;
-            font-size: 0.7rem;
-            color: #9ca3af;
+
+        .footer img {
+            height: 20px;
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
 
     <div class="card">
+        <!-- FOTO DEL PERRO -->
         <div class="card-header">
-            <!-- Imagen de fondo del header -->
-            <img src="foto1.jpg" alt="Fondo perro">
-            
-            <!-- Avatar del perro -->
-            <div class="dog-avatar">
-                <img src="foto1.jpg" alt="Foto del perro">
-            </div>
+            <!-- Asegúrate de que la imagen se llame foto1.jpg y esté en la misma carpeta -->
+            <img src="foto1.jpg" alt="Foto de la mascota" onerror="this.src='https://placedog.net/500/500?id=10'">
+            <div class="badge">Perfil Verificado</div>
         </div>
 
-        <div class="card-body">
-            <h1 class="dog-name">Firulais</h1>
-            <p class="dog-breed">Golden Retriever</p>
+        <!-- INFORMACIÓN -->
+        <div class="card-content">
+            <h1 class="pet-name">Tobias</h1>
+            <p class="pet-info">Labrador • Macho • 5 años</p>
 
-            <div class="dog-info">
-                <div class="info-item">
-                    <span class="icon">⚖️</span>
-                    <span class="value">25 kg</span>
-                    <span class="label">Peso</span>
-                </div>
-                <div class="info-item">
-                    <span class="icon">🎂</span>
-                    <span class="value">3 años</span>
-                    <span class="label">Edad</span>
-                </div>
-                <div class="info-item">
-                    <span class="icon">🐕</span>
-                    <span class="value">Juguetón</span>
-                    <span class="label">Actitud</span>
-                </div>
+            <!-- MENSAJE ESPECIAL -->
+            <div class="alert-box">
+                <p>¡Hola! Si me encontraste,</p>
+                <span>Por favor, ENTREGAR A MI FAMILIA</span>
             </div>
 
-            <div class="owner-section">
-                <div class="owner-title">Dueño Responsable</div>
-                <div class="owner-name">Oscar Prada</div>
-            </div>
-
-            <!-- Botón de contacto con el número de prueba -->
-            <a href="tel:3204829244" class="contact-btn">
-                <span class="icon">📞</span>
-                Llamar al 320 482 9244
+            <!-- CONTACTO -->
+            <p class="contact-text">Comunícate con mi dueño:</p>
+            <a href="tel:3204829244" class="btn-call">
+                📞 Llamar al 320 482 9244
             </a>
-        </div>
 
-        <div class="card-footer">
-            Protegido por Petfy NFC 🐾
+            <!-- FOOTER -->
+            <div class="footer">
+                <span>Protegido por Petfy NFC</span>
+                <span>petfy.com</span>
+            </div>
         </div>
     </div>
 
