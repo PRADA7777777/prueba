@@ -4,22 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#F5F5F7">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Encontré a una mascota perdida. Ayúdame a contactar a su familia para que vuelva a casa.">
+
+  <!-- Open Graph: para cuando alguien comparte el link (WhatsApp, redes) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="¡Hola! Me perdí 🐾 · Petfy">
+  <meta property="og:description" content="Mi familia me está buscando. Por favor, contáctalos para que puedan venir por mí.">
+  <!-- <meta property="og:image" content="https://tudominio.com/Copia de image00035.jpeg"> -->
+
   <title>Mascota encontrada · Petfy</title>
 
   <style>
     /* ============================================================
-       DESIGN TOKENS — inspirados en la escala tipográfica y los
-       grises neutros de Apple (HIG). Todo el sistema parte de aquí.
+       DESIGN TOKENS
        ============================================================ */
     :root {
-      --bg:            #F5F5F7;   /* Gris neutro de fondo */
+      --bg:            #F5F5F7;
       --card:          #FFFFFF;
-      --text:          #1D1D1F;   /* Casi negro, nunca #000 */
-      --text-2:        #6E6E73;   /* Gris secundario */
+      --text:          #1D1D1F;
+      --text-2:        #6E6E73;
       --text-3:        #86868B;
       --divider:       rgba(0, 0, 0, 0.07);
       --blue:          #0071E3;
       --blue-soft:     #E8F1FD;
+      --blue-text:     #2B4C7E;
       --wa:            #25D366;
       --wa-press:      #1FB855;
       --radius-card:   28px;
@@ -27,7 +36,7 @@
       --shadow-card:   0 1px 2px rgba(0,0,0,.04),
                        0 12px 40px rgba(0,0,0,.06);
       --shadow-btn:    0 6px 18px rgba(37, 211, 102, .28);
-      --ease:          cubic-bezier(.22, 1, .36, 1); /* Curva "Apple" */
+      --ease:          cubic-bezier(.22, 1, .36, 1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -47,7 +56,7 @@
     }
 
     /* ============================================================
-       TARJETA PRINCIPAL
+       TARJETA
        ============================================================ */
     .card {
       width: 100%;
@@ -59,21 +68,18 @@
       position: relative;
     }
 
-    /* Animación de entrada escalonada — sutil, sin rebotes */
     @keyframes rise {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .card > * {
-      animation: rise .7s var(--ease) both;
-    }
+    .card > * { animation: rise .7s var(--ease) both; }
     .card > *:nth-child(1) { animation-delay: .02s; }
     .card > *:nth-child(2) { animation-delay: .10s; }
     .card > *:nth-child(3) { animation-delay: .18s; }
     .card > *:nth-child(4) { animation-delay: .26s; }
 
     /* ============================================================
-       BANNER SUPERIOR — estado de la mascota
+       BARRA DE ESTADO
        ============================================================ */
     .status-bar {
       display: flex;
@@ -106,7 +112,7 @@
     }
 
     /* ============================================================
-       IMAGEN — el protagonista absoluto
+       FOTO
        ============================================================ */
     .photo-wrap {
       position: relative;
@@ -126,7 +132,6 @@
     }
     .photo-wrap:hover img { transform: scale(1.03); }
 
-    /* Degradado inferior para legibilidad del chip */
     .photo-wrap::after {
       content: "";
       position: absolute;
@@ -136,6 +141,7 @@
       pointer-events: none;
     }
 
+    /* Chip con contraste garantizado (antes blanco sobre blanco) */
     .chip {
       position: absolute;
       left: 14px;
@@ -149,10 +155,11 @@
       font-size: 13px;
       font-weight: 600;
       color: #fff;
-      background: rgba(255, 255, 255, .22);
+      background: rgba(0, 0, 0, .5);
       backdrop-filter: saturate(180%) blur(20px);
       -webkit-backdrop-filter: saturate(180%) blur(20px);
-      border: .5px solid rgba(255, 255, 255, .35);
+      border: .5px solid rgba(255, 255, 255, .25);
+      text-shadow: 0 1px 2px rgba(0,0,0,.2);
     }
 
     /* ============================================================
@@ -186,8 +193,8 @@
       font-weight: 600;
     }
 
-    /* Tarjeta informativa del dueño */
-    .owner-note {
+    /* Banner azul de acción — copy de conversión */
+    .action-banner {
       display: flex;
       align-items: center;
       gap: 12px;
@@ -198,7 +205,7 @@
       text-align: left;
     }
 
-    .owner-note .icon {
+    .action-banner .icon {
       width: 36px;
       height: 36px;
       flex: 0 0 36px;
@@ -207,19 +214,20 @@
       display: grid;
       place-items: center;
       color: var(--blue);
+      font-size: 18px;
     }
-    .owner-note .icon svg { width: 20px; height: 20px; }
 
-    .owner-note p {
+    .action-banner p {
       font-size: 13.5px;
       line-height: 1.42;
-      color: #2B4C7E;
+      color: var(--blue-text);
       font-weight: 500;
       letter-spacing: -.005em;
     }
+    .action-banner strong { font-weight: 600; }
 
     /* ============================================================
-       BOTONES — jerarquía clara: 1 primario, 1 secundario
+       BOTONES
        ============================================================ */
     .actions {
       display: flex;
@@ -243,6 +251,7 @@
       font-weight: 600;
       letter-spacing: -.01em;
       cursor: pointer;
+      touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
       transition: transform .2s var(--ease),
                   background-color .2s var(--ease),
@@ -258,17 +267,20 @@
     }
 
     .btn:active { transform: scale(.975); }
+    .btn:focus-visible {
+      outline: 3px solid rgba(0, 113, 227, .45);
+      outline-offset: 2px;
+    }
 
-    /* Primario — WhatsApp */
     .btn-wa {
       background: var(--wa);
       color: #fff;
       box-shadow: var(--shadow-btn);
     }
     .btn-wa:hover { background: var(--wa-press); }
-    .btn-wa.is-loading { opacity: .7; pointer-events: none; }
+    .btn-wa.is-loading { opacity: .75; pointer-events: none; }
+    .btn-wa[aria-busy="true"] { cursor: progress; }
 
-    /* Secundario — Llamar */
     .btn-call {
       background: #F5F5F7;
       color: var(--text);
@@ -276,32 +288,76 @@
     }
     .btn-call:hover { background: #ECECEF; }
 
-    /* Estado de carga del botón */
-    .btn .label { transition: opacity .2s var(--ease); }
+    /* Compartir — acción secundaria sutil */
+    .share-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 16px auto 0;
+      padding: 8px 14px;
+      background: none;
+      border: none;
+      color: var(--blue);
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 10px;
+      touch-action: manipulation;
+      transition: background .2s var(--ease);
+    }
+    .share-link:hover  { background: rgba(0, 113, 227, .07); }
+    .share-link:active { background: rgba(0, 113, 227, .13); }
+    .share-link:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
 
     /* ============================================================
-       FOOTER
+       FOOTER — Growth Loop
        ============================================================ */
     .footer {
       padding: 18px 24px calc(18px + env(safe-area-inset-bottom));
       text-align: center;
       border-top: .5px solid var(--divider);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
     }
 
-    .footer p {
+    .footer-brand {
       font-size: 12px;
       font-weight: 500;
       color: var(--text-3);
       letter-spacing: .1px;
     }
+    .footer-brand strong { color: var(--text-2); font-weight: 600; }
 
-    .footer strong {
+    .footer-cta {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+      transition: background .2s var(--ease);
+    }
+    .footer-cta:hover { background: rgba(0, 113, 227, .06); }
+    .footer-cta:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+    .footer-cta span {
       color: var(--blue);
       font-weight: 600;
     }
 
     /* ============================================================
-       RESPONSIVE — pantallas muy pequeñas
+       RESPONSIVE / MOTION
        ============================================================ */
     @media (max-width: 360px) {
       .content h1 { font-size: 24px; }
@@ -309,7 +365,6 @@
       .btn { font-size: 16px; min-height: 52px; }
     }
 
-    /* Accesibilidad: respeta reducción de movimiento */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: .01ms !important;
@@ -320,132 +375,245 @@
 </head>
 <body>
 
-  <main class="card" role="main" aria-labelledby="titulo">
+  <main class="card" aria-labelledby="titulo">
 
-    <!-- Estado -->
     <div class="status-bar">
       <span class="status-dot" aria-hidden="true"></span>
       <span class="status-text">Mascota encontrada</span>
     </div>
 
-    <!-- Foto -->
     <figure class="photo-wrap">
       <img
+        id="petPhoto"
         src="Copia de image00035.jpeg"
-        alt="Foto del perro encontrado"
-        onerror="this.src='https://images.unsplash.com/photo-1552053831-71594a27632d?q=80&w=800&auto=format&fit=crop';">
+        alt="Foto de la mascota encontrada"
+        fetchpriority="high"
+        decoding="async">
       <figcaption class="chip">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
-          <path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6 5c2 0 3.4 1.1 4 2.1C10.6 6.1 12 5 14 5c3.3 0 5.1 3.4 3.6 6.8C19.5 16.4 12 21 12 21z"/>
-        </svg>
-        ¡Ayúdame a volver!
+        <span aria-hidden="true">📍</span> ¡Estoy perdido! Ayúdame a volver
       </figcaption>
     </figure>
 
-    <!-- Contenido -->
     <div class="content">
-      <h1 id="titulo">Hola, soy yo 🐾</h1>
+      <h1 id="titulo">¡Hola! Me perdí 🐾</h1>
       <p class="sub">
-        Alguien me encontró y quiere <strong>entregarme a mi familia</strong>.
-        Si eres tú, escríbele o llámalo. ¡Estamos esperando!
+        Mi familia me está buscando y debe estar muy preocupada.
+        Por favor, <strong>contáctalos</strong> para que puedan venir por mí.
       </p>
 
-      <div class="owner-note">
-        <div class="icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-        </div>
-        <p>Quien me encontró está listo para <strong>entregarme a mi familia</strong>. Responde con confianza.</p>
+      <div class="action-banner">
+        <div class="icon" aria-hidden="true">💙</div>
+        <p>
+          <strong>Estás a un clic de reunirnos.</strong>
+          Escríbeles o llámalos ahora para indicarles dónde estoy.
+        </p>
       </div>
 
       <div class="actions">
-        <!-- Primario: WhatsApp + ubicación -->
-        <button class="btn btn-wa" id="btnWa" onclick="enviarWhatsApp()">
+        <button class="btn btn-wa" id="btnWa" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
           </svg>
-          <span class="label" id="waLabel">Escribir por WhatsApp</span>
+          <span id="waLabel">Avisar por WhatsApp</span>
         </button>
 
-        <!-- Secundario: Llamada -->
-        <button class="btn btn-call" onclick="llamarDueno()">
+        <button class="btn btn-call" id="btnCall" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
           </svg>
-          <span class="label">Llamar al dueño</span>
+          <span>Llamar a mi familia</span>
         </button>
       </div>
+
+      <button class="share-link" id="btnShare" type="button" hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round"
+             stroke-linejoin="round" aria-hidden="true">
+          <circle cx="18" cy="5" r="3"/>
+          <circle cx="6" cy="12" r="3"/>
+          <circle cx="18" cy="19" r="3"/>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+        </svg>
+        Compartir con vecinos
+      </button>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
-      <p>Protegido por <strong>Petfy</strong> · Placa NFC</p>
+      <p class="footer-brand">
+        Protegido con placa inteligente <strong>Petfy</strong>
+      </p>
+      <a class="footer-cta"
+         href="https://petfy.com.co/?utm_source=placa_nfc&utm_medium=rescate&utm_campaign=growth_loop"
+         target="_blank"
+         rel="noopener">
+        ¿Quieres proteger a tu mascota?
+        <span>Conoce más en petfy.com.co →</span>
+      </a>
     </footer>
 
   </main>
 
   <script>
     /* ============================================================
-       CONFIGURACIÓN
-       Cambia solo esta constante para reutilizar la página.
-       Formato internacional sin "+" ni espacios (Colombia = 57).
+       CONFIGURACIÓN — cambia solo estas constantes para reutilizar
        ============================================================ */
-    const TELEFONO_DUENO = "573204829244";
+    const TELEFONO_DUENO = "573204829244"; // sin "+" ni espacios
 
     const MENSAJE_BASE =
-      "¡Hola! 👋 Encontré a tu mascota 🐾 y quiero entregártela a tu familia. " +
-      "¿Cómo coordinamos el reencuentro?";
+      "¡Hola! 👋 Acabo de escanear la placa Petfy de tu mascota " +
+      "y la tengo conmigo. ¿En qué lugar nos podemos encontrar?";
 
-    /* ------------------------------------------------------------
-       Llamada directa
-       ------------------------------------------------------------ */
-    function llamarDueno() {
-      window.location.href = "tel:+" + TELEFONO_DUENO;
+    const GEO_OPTS = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 30000
+    };
+
+    /* ============================================================
+       REFERENCIAS DOM
+       ============================================================ */
+    const btnWa     = document.getElementById('btnWa');
+    const waLabel   = document.getElementById('waLabel');
+    const btnCall   = document.getElementById('btnCall');
+    const btnShare  = document.getElementById('btnShare');
+    const petPhoto  = document.getElementById('petPhoto');
+
+    const WA_LABEL_DEFAULT = waLabel.textContent;
+    const SHARE_LABEL_DEFAULT = btnShare.textContent.trim();
+
+    /* ============================================================
+       IMAGEN — cadena de fallbacks robusta
+       ============================================================ */
+    (function initPhotoFallback() {
+      const fallbacks = [
+        'https://images.unsplash.com/photo-1552053831-71594a27632d?q=80&w=800&auto=format&fit=crop',
+        // Placeholder SVG mínimo como último recurso (nunca queda vacío)
+        'data:image/svg+xml;utf8,' + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
+          '<rect fill="#EDEDEF" width="400" height="300"/>' +
+          '<text x="200" y="155" font-family="sans-serif" font-size="60" ' +
+          'text-anchor="middle" fill="#C7C7CC">🐾</text></svg>'
+        )
+      ];
+      let i = 0;
+      petPhoto.addEventListener('error', () => {
+        if (i < fallbacks.length) petPhoto.src = fallbacks[i++];
+      });
+    })();
+
+    /* ============================================================
+       LLAMADA DIRECTA
+       ============================================================ */
+    btnCall.addEventListener('click', () => {
+      window.location.href = 'tel:+' + TELEFONO_DUENO;
+    });
+
+    /* ============================================================
+       WHATSAPP CON GEOLOCALIZACIÓN OPCIONAL
+
+       Flujo:
+       1. Si el permiso de ubicación ya está DENEGADO → abrir
+          WhatsApp de inmediato (sin prompt inútil).
+       2. En caso contrario, mostrar estado de carga, intentar
+          obtener posición con timeout corto.
+       3. Abrir WhatsApp SIEMPRE — con o sin coordenadas.
+       ============================================================ */
+    function setWaLoading(isLoading) {
+      btnWa.classList.toggle('is-loading', isLoading);
+      btnWa.setAttribute('aria-busy', String(isLoading));
+      waLabel.textContent = isLoading ? 'Obteniendo ubicación…' : WA_LABEL_DEFAULT;
     }
 
-    /* ------------------------------------------------------------
-       WhatsApp con geolocalización opcional
-       - Si el usuario acepta: adjunta link de Google Maps.
-       - Si rechaza o falla: envía el mensaje sin ubicación.
-       - Nunca bloquea el flujo: la acción principal siempre ocurre.
-       ------------------------------------------------------------ */
-    function enviarWhatsApp() {
-      const boton = document.getElementById("btnWa");
-      const label = document.getElementById("waLabel");
-      const textoOriginal = label.textContent;
+    async function getCoords() {
+      if (!('geolocation' in navigator)) return null;
 
-      const abrirWa = (mensaje) => {
-        const url = "https://wa.me/" + TELEFONO_DUENO +
-                    "?text=" + encodeURIComponent(mensaje);
-        window.open(url, "_blank", "noopener");
-        label.textContent = textoOriginal;
-        boton.classList.remove("is-loading");
-      };
+      // Evita el prompt si el usuario ya lo denegó antes
+      try {
+        if (navigator.permissions) {
+          const status = await navigator.permissions.query({ name: 'geolocation' });
+          if (status.state === 'denied') return null;
+        }
+      } catch { /* Safari viejo no soporta query; seguimos */ }
 
-      if (!("geolocation" in navigator)) {
-        abrirWa(MENSAJE_BASE);
-        return;
+      return new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve(pos.coords),
+          () => resolve(null),
+          GEO_OPTS
+        );
+      });
+    }
+
+    function abrirWhatsApp(mensaje) {
+      const url = 'https://wa.me/' + TELEFONO_DUENO +
+                  '?text=' + encodeURIComponent(mensaje);
+      // location.href NO es bloqueado por popup-blockers (window.open sí)
+      window.location.href = url;
+    }
+
+    btnWa.addEventListener('click', async () => {
+      setWaLoading(true);
+
+      const coords = await getCoords();
+      let mensaje = MENSAJE_BASE;
+
+      if (coords) {
+        const mapa = `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
+        mensaje += `\n\n📍 Mi ubicación exacta: ${mapa}`;
       }
 
-      boton.classList.add("is-loading");
-      label.textContent = "Obteniendo ubicación…";
+      abrirWhatsApp(mensaje);
+      // No reseteamos el estado aquí: la página se va a navegar.
+      // El reset ocurre en 'pageshow' si el usuario vuelve.
+    });
 
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const { latitude: lat, longitude: lon } = pos.coords;
-          const mapa = "https://www.google.com/maps?q=" + lat + "," + lon;
-          abrirWa(MENSAJE_BASE + "\n\n📍 Mi ubicación exacta: " + mapa);
-        },
-        () => {
-          abrirWa(MENSAJE_BASE +
-            "\n\n(No pude compartir mi ubicación automáticamente, " +
-            "escríbeme y coordinamos).");
-        },
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
-      );
+    // Reset al volver desde WhatsApp (restauración desde bfcache)
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) setWaLoading(false);
+    });
+
+    /* ============================================================
+       COMPARTIR — para viralidad en recuperación
+       ============================================================ */
+    (function initShare() {
+      const canShare = 'share' in navigator || 'clipboard' in navigator;
+      if (!canShare) return;
+
+      btnShare.hidden = false;
+
+      btnShare.addEventListener('click', async () => {
+        const shareData = {
+          title: 'Mascota encontrada · Petfy',
+          text: 'Ayúdame a volver con mi familia 🐾',
+          url: window.location.href
+        };
+
+        if (navigator.share) {
+          try {
+            await navigator.share(shareData);
+          } catch (err) {
+            if (err.name !== 'AbortError') console.warn('[share]', err);
+          }
+          return;
+        }
+
+        // Fallback: copiar al portapapeles
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          showShareFeedback('Enlace copiado ✓');
+        } catch {
+          showShareFeedback('No se pudo copiar');
+        }
+      });
+    })();
+
+    function showShareFeedback(texto) {
+      btnShare.textContent = texto;
+      clearTimeout(btnShare._t);
+      btnShare._t = setTimeout(() => {
+        btnShare.textContent = SHARE_LABEL_DEFAULT;
+      }, 1800);
     }
   </script>
 </body>
