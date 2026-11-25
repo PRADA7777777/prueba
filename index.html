@@ -1,277 +1,452 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encontré a esta mascota - Petfy</title>
-    <!-- Fuente amigable de Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #0EA5E9; /* Azul bonito */
-            --whatsapp: #25D366; /* Verde WhatsApp */
-            --bg: #F3F4F6;
-            --text-dark: #1F2937;
-            --text-light: #6B7280;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#F5F5F7">
+  <title>Mascota encontrada · Petfy</title>
 
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
+  <style>
+    /* ============================================================
+       DESIGN TOKENS — inspirados en la escala tipográfica y los
+       grises neutros de Apple (HIG). Todo el sistema parte de aquí.
+       ============================================================ */
+    :root {
+      --bg:            #F5F5F7;   /* Gris neutro de fondo */
+      --card:          #FFFFFF;
+      --text:          #1D1D1F;   /* Casi negro, nunca #000 */
+      --text-2:        #6E6E73;   /* Gris secundario */
+      --text-3:        #86868B;
+      --divider:       rgba(0, 0, 0, 0.07);
+      --blue:          #0071E3;
+      --blue-soft:     #E8F1FD;
+      --wa:            #25D366;
+      --wa-press:      #1FB855;
+      --radius-card:   28px;
+      --radius-btn:    16px;
+      --shadow-card:   0 1px 2px rgba(0,0,0,.04),
+                       0 12px 40px rgba(0,0,0,.06);
+      --shadow-btn:    0 6px 18px rgba(37, 211, 102, .28);
+      --ease:          cubic-bezier(.22, 1, .36, 1); /* Curva "Apple" */
+    }
 
-        .card {
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            max-width: 400px;
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Cinta superior de alerta */
-        .alert-banner {
-            background-color: #FEF2F2;
-            color: #DC2626;
-            text-align: center;
-            padding: 12px;
-            font-weight: 800;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid #FECACA;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                   "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
 
-        .image-container {
-            width: 100%;
-            height: 260px;
-            background-color: #E5E7EB;
-            position: relative;
-        }
+    /* ============================================================
+       TARJETA PRINCIPAL
+       ============================================================ */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      position: relative;
+    }
 
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+    /* Animación de entrada escalonada — sutil, sin rebotes */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card > * {
+      animation: rise .7s var(--ease) both;
+    }
+    .card > *:nth-child(1) { animation-delay: .02s; }
+    .card > *:nth-child(2) { animation-delay: .10s; }
+    .card > *:nth-child(3) { animation-delay: .18s; }
+    .card > *:nth-child(4) { animation-delay: .26s; }
 
-        /* Etiqueta flotante sobre la foto */
-        .tag {
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
-            white-space: nowrap;
-        }
+    /* ============================================================
+       BANNER SUPERIOR — estado de la mascota
+       ============================================================ */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px 24px 14px;
+    }
 
-        .content {
-            padding: 30px 24px 24px;
-            text-align: center;
-        }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--wa);
+      box-shadow: 0 0 0 0 rgba(37, 211, 102, .55);
+      animation: pulse 2.2s var(--ease) infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(37, 211, 102, .55); }
+      70%  { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
 
-        .content h1 {
-            font-size: 1.5rem;
-            color: var(--text-dark);
-            margin: 0 0 10px;
-            font-weight: 800;
-            line-height: 1.2;
-        }
+    .status-text {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+      color: var(--text-2);
+    }
 
-        .content p {
-            color: var(--text-light);
-            font-size: 1rem;
-            margin: 0 0 24px;
-            line-height: 1.5;
-        }
+    /* ============================================================
+       IMAGEN — el protagonista absoluto
+       ============================================================ */
+    .photo-wrap {
+      position: relative;
+      margin: 0 14px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #EDEDEF;
+      aspect-ratio: 4 / 3;
+    }
 
-        .highlight {
-            color: var(--text-dark);
-            font-weight: 700;
-        }
+    .photo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 1.2s var(--ease);
+    }
+    .photo-wrap:hover img { transform: scale(1.03); }
 
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+    /* Degradado inferior para legibilidad del chip */
+    .photo-wrap::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 45%;
+      background: linear-gradient(to top, rgba(0,0,0,.38), transparent);
+      pointer-events: none;
+    }
 
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 1rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-        }
+    .chip {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      background: rgba(255, 255, 255, .22);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border: .5px solid rgba(255, 255, 255, .35);
+    }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
+    /* ============================================================
+       CONTENIDO
+       ============================================================ */
+    .content {
+      padding: 26px 24px 22px;
+      text-align: center;
+    }
 
-        /* Botón de WhatsApp */
-        .btn-whatsapp {
-            background-color: var(--whatsapp);
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
-        }
-        .btn-whatsapp:hover {
-            background-color: #1EBE57;
-        }
+    .content h1 {
+      font-size: 28px;
+      line-height: 1.14;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 10px;
+    }
 
-        /* Botón de Llamada */
-        .btn-phone {
-            background-color: white;
-            color: var(--text-dark);
-            border: 2px solid #E5E7EB;
-        }
-        .btn-phone:hover {
-            background-color: #F9FAFB;
-            border-color: #D1D5DB;
-        }
+    .content .sub {
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--text-2);
+      font-weight: 400;
+      letter-spacing: -.01em;
+      max-width: 320px;
+      margin: 0 auto 6px;
+    }
 
-        .btn svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
-        }
+    .content .sub strong {
+      color: var(--text);
+      font-weight: 600;
+    }
 
-        /* Pie de página Petfy */
-        .footer {
-            text-align: center;
-            padding: 16px;
-            background-color: #F9FAFB;
-            border-top: 1px solid #F3F4F6;
-            color: #9CA3AF;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-        .footer span {
-            color: var(--primary);
-        }
+    /* Tarjeta informativa del dueño */
+    .owner-note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 22px;
+      padding: 14px 16px;
+      background: var(--blue-soft);
+      border-radius: 14px;
+      text-align: left;
+    }
 
-        /* Efecto de carga para el botón de ubicación */
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-    </style>
+    .owner-note .icon {
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      border-radius: 10px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      color: var(--blue);
+    }
+    .owner-note .icon svg { width: 20px; height: 20px; }
+
+    .owner-note p {
+      font-size: 13.5px;
+      line-height: 1.42;
+      color: #2B4C7E;
+      font-weight: 500;
+      letter-spacing: -.005em;
+    }
+
+    /* ============================================================
+       BOTONES — jerarquía clara: 1 primario, 1 secundario
+       ============================================================ */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 56px;
+      padding: 0 20px;
+      border: none;
+      border-radius: var(--radius-btn);
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .2s var(--ease),
+                  background-color .2s var(--ease),
+                  box-shadow .2s var(--ease),
+                  opacity .2s var(--ease);
+    }
+
+    .btn svg {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 20px;
+      fill: currentColor;
+    }
+
+    .btn:active { transform: scale(.975); }
+
+    /* Primario — WhatsApp */
+    .btn-wa {
+      background: var(--wa);
+      color: #fff;
+      box-shadow: var(--shadow-btn);
+    }
+    .btn-wa:hover { background: var(--wa-press); }
+    .btn-wa.is-loading { opacity: .7; pointer-events: none; }
+
+    /* Secundario — Llamar */
+    .btn-call {
+      background: #F5F5F7;
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px var(--divider);
+    }
+    .btn-call:hover { background: #ECECEF; }
+
+    /* Estado de carga del botón */
+    .btn .label { transition: opacity .2s var(--ease); }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer {
+      padding: 18px 24px calc(18px + env(safe-area-inset-bottom));
+      text-align: center;
+      border-top: .5px solid var(--divider);
+    }
+
+    .footer p {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-3);
+      letter-spacing: .1px;
+    }
+
+    .footer strong {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       RESPONSIVE — pantallas muy pequeñas
+       ============================================================ */
+    @media (max-width: 360px) {
+      .content h1 { font-size: 24px; }
+      .content { padding: 22px 18px 18px; }
+      .btn { font-size: 16px; min-height: 52px; }
+    }
+
+    /* Accesibilidad: respeta reducción de movimiento */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="alert-banner">
-            🚨 MASCOTA ENCONTRADA
-        </div>
-        
-        <div class="image-container">
-            <!-- Asegúrate de que la foto se llame exactamente foto1.jpg en la misma carpeta -->
-            <img src="Copia de image00035.jpeg" alt="Foto de la mascota" onerror="this.src='https://via.placeholder.com/400x260?text=Foto+de+la+Mascota'">
-            <div class="tag">¡Ayúdame a volver!</div>
-        </div>
+  <main class="card" role="main" aria-labelledby="titulo">
 
-        <div class="content">
-            <h1>¿Me encontraste?</h1>
-            <p>Por favor, <span class="highlight">entrégame a mi familia</span>. Ellos están muy preocupados por mí. ¡Gracias por tu ayuda!</p>
-
-            <div class="btn-group">
-                <!-- Botón de WhatsApp con envío de ubicación -->
-                <button class="btn btn-whatsapp" onclick="enviarWhatsApp(this)">
-                    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                    <span>Enviar Ubicación por WhatsApp</span>
-                </button>
-
-                <!-- Botón de Llamada -->
-                <button class="btn btn-phone" onclick="llamarDueno()">
-                    <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
-                    <span>Llamar al Dueño</span>
-                </button>
-            </div>
-        </div>
-        
-        <div class="footer">
-            Protegido por <span>Petfy</span> - Placa NFC
-        </div>
+    <!-- Estado -->
+    <div class="status-bar">
+      <span class="status-dot" aria-hidden="true"></span>
+      <span class="status-text">Mascota encontrada</span>
     </div>
 
-    <script>
-        // Número de teléfono del dueño (con código de país para Colombia: 57)
-        const TELEFONO_DUENO = "573204829244"; 
+    <!-- Foto -->
+    <figure class="photo-wrap">
+      <img
+        src="Copia de image00035.jpeg"
+        alt="Foto del perro encontrado"
+        onerror="this.src='https://images.unsplash.com/photo-1552053831-71594a27632d?q=80&w=800&auto=format&fit=crop';">
+      <figcaption class="chip">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+          <path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6 5c2 0 3.4 1.1 4 2.1C10.6 6.1 12 5 14 5c3.3 0 5.1 3.4 3.6 6.8C19.5 16.4 12 21 12 21z"/>
+        </svg>
+        ¡Ayúdame a volver!
+      </figcaption>
+    </figure>
 
-        // Lógica del botón de Llamada
-        function llamarDueno() {
-            window.location.href = `tel:+${TELEFONO_DUENO}`;
-        }
+    <!-- Contenido -->
+    <div class="content">
+      <h1 id="titulo">Hola, soy yo 🐾</h1>
+      <p class="sub">
+        Alguien me encontró y quiere <strong>entregarme a mi familia</strong>.
+        Si eres tú, escríbele o llámalo. ¡Estamos esperando!
+      </p>
 
-        // Lógica del botón de WhatsApp con Ubicación
-        function enviarWhatsApp(boton) {
-            const mensajeBase = "¡Hola! Encontré a tu mascota 🐶. Por favor, entrégame a mi familia. ";
-            
-            // Guardamos el texto original y mostramos estado de carga
-            const textoOriginal = boton.innerHTML;
-            boton.innerHTML = '<span>Obteniendo ubicación...</span>';
-            boton.classList.add('loading');
+      <div class="owner-note">
+        <div class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <p>Quien me encontró está listo para <strong>entregarme a mi familia</strong>. Responde con confianza.</p>
+      </div>
 
-            // Intentar obtener la ubicación del GPS del celular
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    // Si el usuario acepta dar la ubicación
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        const linkMapa = `https://www.google.com/maps?q=${lat},${lon}`;
-                        
-                        const mensajeFinal = encodeURIComponent(
-                            mensajeBase + "\n📍 Mi ubicación exacta es: " + linkMapa
-                        );
-                        
-                        // Abrir WhatsApp
-                        window.open(`https://wa.me/${TELEFONO_DUENO}?text=${mensajeFinal}`, '_blank');
-                        
-                        // Restaurar botón
-                        boton.innerHTML = textoOriginal;
-                        boton.classList.remove('loading');
-                    },
-                    // Si el usuario niega la ubicación o hay un error
-                    function(error) {
-                        const mensajeFinal = encodeURIComponent(
-                            mensajeBase + "\n(No pude obtener la ubicación automática, por favor escríbeme para coordinar la entrega)."
-                        );
-                        window.open(`https://wa.me/${TELEFONO_DUENO}?text=${mensajeFinal}`, '_blank');
-                        
-                        boton.innerHTML = textoOriginal;
-                        boton.classList.remove('loading');
-                    },
-                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-                );
-            } else {
-                // Si el navegador no soporta geolocalización
-                const mensajeFinal = encodeURIComponent(mensajeBase);
-                window.open(`https://wa.me/${TELEFONO_DUENO}?text=${mensajeFinal}`, '_blank');
-                boton.innerHTML = textoOriginal;
-                boton.classList.remove('loading');
-            }
-        }
-    </script>
+      <div class="actions">
+        <!-- Primario: WhatsApp + ubicación -->
+        <button class="btn btn-wa" id="btnWa" onclick="enviarWhatsApp()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+          </svg>
+          <span class="label" id="waLabel">Escribir por WhatsApp</span>
+        </button>
+
+        <!-- Secundario: Llamada -->
+        <button class="btn btn-call" onclick="llamarDueno()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+          </svg>
+          <span class="label">Llamar al dueño</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Protegido por <strong>Petfy</strong> · Placa NFC</p>
+    </footer>
+
+  </main>
+
+  <script>
+    /* ============================================================
+       CONFIGURACIÓN
+       Cambia solo esta constante para reutilizar la página.
+       Formato internacional sin "+" ni espacios (Colombia = 57).
+       ============================================================ */
+    const TELEFONO_DUENO = "573204829244";
+
+    const MENSAJE_BASE =
+      "¡Hola! 👋 Encontré a tu mascota 🐾 y quiero entregártela a tu familia. " +
+      "¿Cómo coordinamos el reencuentro?";
+
+    /* ------------------------------------------------------------
+       Llamada directa
+       ------------------------------------------------------------ */
+    function llamarDueno() {
+      window.location.href = "tel:+" + TELEFONO_DUENO;
+    }
+
+    /* ------------------------------------------------------------
+       WhatsApp con geolocalización opcional
+       - Si el usuario acepta: adjunta link de Google Maps.
+       - Si rechaza o falla: envía el mensaje sin ubicación.
+       - Nunca bloquea el flujo: la acción principal siempre ocurre.
+       ------------------------------------------------------------ */
+    function enviarWhatsApp() {
+      const boton = document.getElementById("btnWa");
+      const label = document.getElementById("waLabel");
+      const textoOriginal = label.textContent;
+
+      const abrirWa = (mensaje) => {
+        const url = "https://wa.me/" + TELEFONO_DUENO +
+                    "?text=" + encodeURIComponent(mensaje);
+        window.open(url, "_blank", "noopener");
+        label.textContent = textoOriginal;
+        boton.classList.remove("is-loading");
+      };
+
+      if (!("geolocation" in navigator)) {
+        abrirWa(MENSAJE_BASE);
+        return;
+      }
+
+      boton.classList.add("is-loading");
+      label.textContent = "Obteniendo ubicación…";
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude: lat, longitude: lon } = pos.coords;
+          const mapa = "https://www.google.com/maps?q=" + lat + "," + lon;
+          abrirWa(MENSAJE_BASE + "\n\n📍 Mi ubicación exacta: " + mapa);
+        },
+        () => {
+          abrirWa(MENSAJE_BASE +
+            "\n\n(No pude compartir mi ubicación automáticamente, " +
+            "escríbeme y coordinamos).");
+        },
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+      );
+    }
+  </script>
 </body>
 </html>
