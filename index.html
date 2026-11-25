@@ -7,7 +7,6 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="description" content="Encontré a una mascota perdida. Ayúdame a contactar a su familia para que vuelva a casa.">
 
-  
   <!-- Open Graph: para cuando alguien comparte el link (WhatsApp, redes) -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="¡Hola! Me perdí 🐾 · Petfy">
@@ -142,7 +141,7 @@
       pointer-events: none;
     }
 
-    /* Chip con contraste garantizado (antes blanco sobre blanco) */
+    /* Chip con contraste garantizado */
     .chip {
       position: absolute;
       left: 14px;
@@ -289,31 +288,6 @@
     }
     .btn-call:hover { background: #ECECEF; }
 
-    /* Compartir — acción secundaria sutil */
-    .share-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin: 16px auto 0;
-      padding: 8px 14px;
-      background: none;
-      border: none;
-      color: var(--blue);
-      font: inherit;
-      font-size: 13.5px;
-      font-weight: 500;
-      cursor: pointer;
-      border-radius: 10px;
-      touch-action: manipulation;
-      transition: background .2s var(--ease);
-    }
-    .share-link:hover  { background: rgba(0, 113, 227, .07); }
-    .share-link:active { background: rgba(0, 113, 227, .13); }
-    .share-link:focus-visible {
-      outline: 2px solid var(--blue);
-      outline-offset: 2px;
-    }
-
     /* ============================================================
        FOOTER — Growth Loop
        ============================================================ */
@@ -383,7 +357,6 @@
       <span class="status-text">Mascota encontrada</span>
     </div>
 
-    
     <figure class="photo-wrap">
       <img
         id="petPhoto"
@@ -425,6 +398,9 @@
           </svg>
           <span>Llamar a mi familia</span>
         </button>
+      </div>
+    </div>
+
     <footer class="footer">
       <p class="footer-brand">
         Protegido con placa inteligente <strong>Petfy</strong>
@@ -462,11 +438,9 @@
     const btnWa     = document.getElementById('btnWa');
     const waLabel   = document.getElementById('waLabel');
     const btnCall   = document.getElementById('btnCall');
-    const btnShare  = document.getElementById('btnShare');
     const petPhoto  = document.getElementById('petPhoto');
 
     const WA_LABEL_DEFAULT = waLabel.textContent;
-    const SHARE_LABEL_DEFAULT = btnShare.textContent.trim();
 
     /* ============================================================
        IMAGEN — cadena de fallbacks robusta
@@ -474,7 +448,6 @@
     (function initPhotoFallback() {
       const fallbacks = [
         'https://images.unsplash.com/photo-1552053831-71594a27632d?q=80&w=800&auto=format&fit=crop',
-        // Placeholder SVG mínimo como último recurso (nunca queda vacío)
         'data:image/svg+xml;utf8,' + encodeURIComponent(
           '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
           '<rect fill="#EDEDEF" width="400" height="300"/>' +
@@ -558,49 +531,6 @@
     window.addEventListener('pageshow', (event) => {
       if (event.persisted) setWaLoading(false);
     });
-
-    /* ============================================================
-       COMPARTIR — para viralidad en recuperación
-       ============================================================ */
-    (function initShare() {
-      const canShare = 'share' in navigator || 'clipboard' in navigator;
-      if (!canShare) return;
-
-      btnShare.hidden = false;
-
-      btnShare.addEventListener('click', async () => {
-        const shareData = {
-          title: 'Mascota encontrada · Petfy',
-          text: 'Ayúdame a volver con mi familia 🐾',
-          url: window.location.href
-        };
-
-        if (navigator.share) {
-          try {
-            await navigator.share(shareData);
-          } catch (err) {
-            if (err.name !== 'AbortError') console.warn('[share]', err);
-          }
-          return;
-        }
-
-        // Fallback: copiar al portapapeles
-        try {
-          await navigator.clipboard.writeText(window.location.href);
-          showShareFeedback('Enlace copiado ✓');
-        } catch {
-          showShareFeedback('No se pudo copiar');
-        }
-      });
-    })();
-
-    function showShareFeedback(texto) {
-      btnShare.textContent = texto;
-      clearTimeout(btnShare._t);
-      btnShare._t = setTimeout(() => {
-        btnShare.textContent = SHARE_LABEL_DEFAULT;
-      }, 1800);
-    }
   </script>
 </body>
 </html>
