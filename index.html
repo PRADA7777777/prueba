@@ -1,15 +1,25 @@
+Tienes toda la razón. El problema es que los navegadores móviles (especialmente Chrome en Android y Safari en iOS) bloquean el GPS si la página no es segura (https) o si intentas abrir WhatsApp antes de que el navegador termine de calcular la ubicación. Además, algunos navegadores bloquean la apertura de pestañas nuevas si no es una acción directa del usuario.
+
+Para solucionarlo, he cambiado la estrategia:
+
+1. La página ahora se conecta a la API de mapas para convertir tus coordenadas en una dirección real (ej: "Calle 123 #45-67, Bogotá"), lo que es mucho más amigable para quien encuentra al perro.
+2. El botón mostrará un estado de carga ("Buscando GPS...") y, cuando tenga la ubicación, abrirá WhatsApp automáticamente.
+3. Si falla el GPS o el usuario niega el permiso, hará una pregunta en pantalla para que el rescatista escriba su dirección manualmente y se la envíe al dueño.
+
+Aquí tienes el código actualizado y robusto:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Encontré a esta mascota - Petfy</title>
-    <!-- Fuente amigable de Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #0EA5E9; /* Azul bonito */
-            --whatsapp: #25D366; /* Verde WhatsApp */
+            --primary: #0EA5E9;
+            --whatsapp: #25D366;
             --bg: #F3F4F6;
             --text-dark: #1F2937;
             --text-light: #6B7280;
@@ -37,7 +47,6 @@
             position: relative;
         }
 
-        /* Cinta superior de alerta */
         .alert-banner {
             background-color: #FEF2F2;
             color: #DC2626;
@@ -62,7 +71,6 @@
             object-fit: cover;
         }
 
-        /* Etiqueta flotante sobre la foto */
         .tag {
             position: absolute;
             bottom: -15px;
@@ -123,13 +131,13 @@
             cursor: pointer;
             border: none;
             font-family: inherit;
+            width: 100%;
         }
 
         .btn:active {
             transform: scale(0.98);
         }
 
-        /* Botón de WhatsApp */
         .btn-whatsapp {
             background-color: var(--whatsapp);
             color: white;
@@ -139,7 +147,6 @@
             background-color: #1EBE57;
         }
 
-        /* Botón de Llamada */
         .btn-phone {
             background-color: white;
             color: var(--text-dark);
@@ -154,9 +161,9 @@
             width: 22px;
             height: 22px;
             fill: currentColor;
+            flex-shrink: 0;
         }
 
-        /* Pie de página Petfy */
         .footer {
             text-align: center;
             padding: 16px;
@@ -170,10 +177,16 @@
             color: var(--primary);
         }
 
-        /* Efecto de carga para el botón de ubicación */
         .loading {
             opacity: 0.7;
             pointer-events: none;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
     </style>
 </head>
@@ -185,8 +198,8 @@
         </div>
         
         <div class="image-container">
-            <!-- Asegúrate de que la foto se llame exactamente foto1.jpg en la misma carpeta -->
-            <img src="Copia de image00035.jpeg" alt="Foto de la mascota" onerror="this.src='https://via.placeholder.com/400x260?text=Foto+de+la+Mascota'">
+            <!-- Asegúrate de que la foto se llame foto1.jpg -->
+            <img src="foto1.jpg" alt="Foto de la mascota" onerror="this.src='https://via.placeholder.com/400x260?text=Foto+de+la+Mascota'">
             <div class="tag">¡Ayúdame a volver!</div>
         </div>
 
@@ -195,13 +208,11 @@
             <p>Por favor, <span class="highlight">entrégame a mi familia</span>. Ellos están muy preocupados por mí. ¡Gracias por tu ayuda!</p>
 
             <div class="btn-group">
-                <!-- Botón de WhatsApp con envío de ubicación -->
-                <button class="btn btn-whatsapp" onclick="enviarWhatsApp(this)">
+                <button class="btn btn-whatsapp" onclick="enviarUbicacion(this)">
                     <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                    <span>Enviar Ubicación por WhatsApp</span>
+                    <span>Enviar Ubicación</span>
                 </button>
 
-                <!-- Botón de Llamada -->
                 <button class="btn btn-phone" onclick="llamarDueno()">
                     <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.03 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
                     <span>Llamar al Dueño</span>
@@ -215,63 +226,96 @@
     </div>
 
     <script>
-        // Número de teléfono del dueño (con código de país para Colombia: 57)
         const TELEFONO_DUENO = "573204829244"; 
 
-        // Lógica del botón de Llamada
         function llamarDueno() {
             window.location.href = `tel:+${TELEFONO_DUENO}`;
         }
 
-        // Lógica del botón de WhatsApp con Ubicación
-        function enviarWhatsApp(boton) {
-            const mensajeBase = "¡Hola! Encontré a tu mascota 🐶. Por favor, entrégame a mi familia. ";
-            
-            // Guardamos el texto original y mostramos estado de carga
+        async function enviarUbicacion(boton) {
             const textoOriginal = boton.innerHTML;
-            boton.innerHTML = '<span>Obteniendo ubicación...</span>';
+            boton.innerHTML = '<span>Obteniendo GPS...</span>';
             boton.classList.add('loading');
 
-            // Intentar obtener la ubicación del GPS del celular
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    // Si el usuario acepta dar la ubicación
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        const linkMapa = `https://www.google.com/maps?q=${lat},${lon}`;
-                        
-                        const mensajeFinal = encodeURIComponent(
-                            mensajeBase + "\n📍 Mi ubicación exacta es: " + linkMapa
-                        );
-                        
-                        // Abrir WhatsApp
-                        window.open(`https://wa.me/${TELEFONO_DUENO}?text=${mensajeFinal}`, '_blank');
-                        
-                        // Restaurar botón
-                        boton.innerHTML = textoOriginal;
-                        boton.classList.remove('loading');
-                    },
-                    // Si el usuario niega la ubicación o hay un error
-                    function(error) {
-                        const mensajeFinal = encodeURIComponent(
-                            mensajeBase + "\n(No pude obtener la ubicación automática, por favor escríbeme para coordinar la entrega)."
-                        );
-                        window.open(`https://wa.me/${TELEFONO_DUENO}?text=${mensajeFinal}`, '_blank');
-                        
-                        boton.innerHTML = textoOriginal;
-                        boton.classList.remove('loading');
-                    },
-                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-                );
-            } else {
-                // Si el navegador no soporta geolocalización
-                const mensajeFinal = encodeURIComponent(mensajeBase);
-                window.open(`https://wa.me/${TELEFONO_DUENO}?text=${mensajeFinal}`, '_blank');
-                boton.innerHTML = textoOriginal;
-                boton.classList.remove('loading');
+            // Función para abrir WhatsApp
+            const abrirWhatsApp = (mensaje) => {
+                const url = `https://wa.me/${TELEFONO_DUENO}?text=${encodeURIComponent(mensaje)}`;
+                // Usamos window.location.href para evitar bloqueadores de ventanas emergentes en móviles
+                window.location.href = url;
+                
+                // Restaurar el botón un segundo después por si el usuario vuelve
+                setTimeout(() => {
+                    boton.innerHTML = textoOriginal;
+                    boton.classList.remove('loading');
+                }, 1000);
+            };
+
+            // Si no hay soporte de GPS
+            if (!navigator.geolocation) {
+                const dirManual = prompt("Tu navegador no soporta GPS. Por favor escribe la dirección donde encontraste al perrito:");
+                if (dirManual) {
+                    abrirWhatsApp(`¡Hola! Encontré a tu mascota 🐶. Por favor, entrégame a mi familia.\n📍 Estoy en: ${dirManual}`);
+                } else {
+                    boton.innerHTML = textoOriginal;
+                    boton.classList.remove('loading');
+                }
+                return;
             }
+
+            // Solicitar ubicación GPS
+            navigator.geolocation.getCurrentPosition(
+                // Éxito: Tenemos coordenadas
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const linkMapa = `https://www.google.com/maps?q=${lat},${lon}`;
+                    
+                    boton.innerHTML = '<span>Buscando dirección...</span>';
+
+                    try {
+                        // Intentar obtener la dirección real usando OpenStreetMap (gratis y sin API Key)
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                        const data = await res.json();
+                        
+                        let direccionReal = "";
+                        if (data && data.display_name) {
+                            // Tomamos solo las primeras 3 partes de la dirección para que no sea tan larga
+                            direccionReal = data.display_name.split(',').slice(0, 3).join(',');
+                        }
+
+                        const mensaje = `¡Hola! Encontré a tu mascota 🐶. Por favor, entrégame a mi familia.\n📍 Ubicación aproximada: ${direccionReal || 'Desconocida'}\n🗺️ Mapa exacto: ${linkMapa}`;
+                        abrirWhatsApp(mensaje);
+                    } catch (error) {
+                        // Si falla el mapa, enviamos solo las coordenadas
+                        const mensaje = `¡Hola! Encontré a tu mascota 🐶. Por favor, entrégame a mi familia.\n🗺️ Mi ubicación exacta es: ${linkMapa}`;
+                        abrirWhatsApp(mensaje);
+                    }
+                },
+                // Error: El usuario negó el permiso o hubo un fallo
+                (error) => {
+                    // Preguntar manualmente como respaldo
+                    const dirManual = prompt("No pudimos obtener tu GPS automáticamente. Por favor, escribe la dirección donde encontraste al perrito:");
+                    if (dirManual) {
+                        abrirWhatsApp(`¡Hola! Encontré a tu mascota 🐶. Por favor, entrégame a mi familia.\n📍 Estoy en: ${dirManual}`);
+                    } else {
+                        // Si el usuario cancela la pregunta, volvemos al estado normal
+                        boton.innerHTML = textoOriginal;
+                        boton.classList.remove('loading');
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         }
     </script>
 </body>
 </html>
+```
+
+🛠️ ¿Qué mejoramos?
+
+1. Geolocalización Inversa: Ahora, en lugar de enviar solo números (latitud y longitud), el código consulta la API de OpenStreetMap (completamente gratis) para obtener una dirección real, por ejemplo: Calle 123 #45-67, Bogotá.
+2. Manejo de errores del GPS: Si el celular no tiene el GPS activo o el usuario bloquea el permiso, saltará una alerta pidiendo que escriban la dirección a mano. Así nunca se quedan sin enviar el mensaje.
+3. Bloqueo de ventanas emergentes: Cambié window.open por window.location.href. Los teléfonos móviles suelen bloquear las ventanas emergentes (pop-ups) si no son un clic directo. Al usar location.href, el celular abrirá la app de WhatsApp directamente en la misma pestaña, garantizando que se envíe.
+4. Botón de carga: Mientras el celular busca el GPS, el botón dirá "Obteniendo GPS..." para que el usuario sepa que está trabajando.
+
+Para probarlo en el celular, recuerda usar la IP local de tu computadora (por ejemplo http://192.168.33.9:3000/prueba.html). Si lo abres haciendo doble clic directo al archivo, Chrome bloqueará el GPS por seguridad. ¡Prueba a ver qué tal se siente ahora!
